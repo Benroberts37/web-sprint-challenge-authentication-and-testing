@@ -1,4 +1,4 @@
-const Users = require('../users/users-model')
+const Users = require('../../Users/users-model')
 
 const checkPayload = (req, res, next) =>  {
     try {
