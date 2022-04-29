@@ -1,4 +1,20 @@
 const router = require('express').Router();
+const bcrypt = require('bcryptjs')
+const jwt = require('jswonwebtoken')
+const {JWT_SECRET} = require('../../config/secret')
+const User = require('../users/users-model')
+
+
+function buildToken(user) {
+  const payload = {
+    subject: user.id,
+    username: user.username
+  }
+  const options = {
+    expiresIn:'2d',
+  }
+  return jwt.sign(payload, JWT_SECRET, options)
+}
 
 router.post('/register', (req, res) => {
   res.end('implement register, please!');
