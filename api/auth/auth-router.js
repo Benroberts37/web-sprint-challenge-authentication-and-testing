@@ -7,7 +7,7 @@ const {checkIfUsernameIsUnique, validateLogin} = require('../middleware/authMidd
 
 
 
-router.post('/register', checkIfUsernameIsUnique, validateLogin, (req, res, next) => {
+router.post('/register',validateLogin, checkIfUsernameIsUnique, (req, res, next) => {
   const { username, password } = req.body
   const hash = bcrypt.hashSync(password, 8)
 
@@ -45,7 +45,7 @@ router.post('/register', checkIfUsernameIsUnique, validateLogin, (req, res, next
 });
 
 router.post('/login', validateLogin, (req, res, next) => {
-  const { username, password } = req.body
+  let { username, password } = req.body
 
   User.findBy({username})
   .then(([user]) => {
