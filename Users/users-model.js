@@ -1,6 +1,6 @@
 const db = require('../data/dbConfig')
 
-function find(filter) {
+function findBy(filter) {
     return db('users')
     .select('id', "username", "password")
     .where(filter)
@@ -29,7 +29,7 @@ function findByUsername(username) {
 }
 
 module.exports = {
-    find, 
+    findBy, 
     findById,
     validatePassword,
     findByUsername,
