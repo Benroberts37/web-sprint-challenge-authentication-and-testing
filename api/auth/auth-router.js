@@ -19,10 +19,9 @@ function buildToken(user) {
 
 router.post('/register', checkIfUsernameIsUnique, checkPayload, (req, res) => {
   const { username, password } = req.body
-  const { role_name } = req
   const hash = bcrypt.hashSync(password, 7)
 
-  User.add({ username, password: hash, role_name })
+  User.add({ username, password: hash })
   .then(saved => {
     res.status(201).json(saved)
   })
