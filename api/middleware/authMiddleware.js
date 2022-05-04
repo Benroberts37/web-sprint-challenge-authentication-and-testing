@@ -4,7 +4,7 @@ const checkPayload = (req, res, next) =>  {
     try {
         const {username, password } = req.body
         if(!username || !password) {
-            res.status(404).json({message: 'username and password is required'})
+            res.status(404).json({message: 'username and password required'})
         } else {
             req.username = username
             req.password = password

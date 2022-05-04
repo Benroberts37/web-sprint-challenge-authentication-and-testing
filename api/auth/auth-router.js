@@ -17,17 +17,16 @@ function buildToken(user) {
   return jwt.sign(payload, JWT_SECRET, options)
 }
 
-router.post('/register', checkIfUsernameIsUnique, checkPayload, (req, res) => {
+router.post('/register', checkIfUsernameIsUnique, checkPayload, (req, res, next) => {
   const { username, password } = req.body
   const hash = bcrypt.hashSync(password, 7)
 
   User.add({ username, password: hash })
   .then(saved => {
-    res.status(201).json(saved)
+    res.status(201).json(...saved)
   })
-  .catch(err => {
-    res.status(400).json(err)
-  })
+  .catch(next)
+
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -67,7 +66,7 @@ router.post('/login', validateLogin, (req, res, next) => {
         token
       })
     } else {
-      next({status:401, message: 'invalid credentials'})
+      next({status:401, message: 'Invalid credentials'})
     }
   })
   .catch(next)
