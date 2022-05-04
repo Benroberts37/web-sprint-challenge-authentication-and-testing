@@ -3,23 +3,13 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const {JWT_SECRET} = require('../../config/secret')
 const User = require('../../Users/users-model')
-const {checkPayload, checkIfUsernameIsUnique, validateLogin} = require('../middleware/authMiddleware')
+const {checkIfUsernameIsUnique, validateLogin} = require('../middleware/authMiddleware')
 
 
-function buildToken(user) {
-  const payload = {
-    subject: user.id,
-    username: user.username
-  }
-  const options = {
-    expiresIn:'2d',
-  }
-  return jwt.sign(payload, JWT_SECRET, options)
-}
 
-router.post('/register', checkIfUsernameIsUnique, checkPayload, (req, res, next) => {
+router.post('/register', checkIfUsernameIsUnique, validateLogin, (req, res, next) => {
   const { username, password } = req.body
-  const hash = bcrypt.hashSync(password, 7)
+  const hash = bcrypt.hashSync(password, 8)
 
   User.add({ username, password: hash })
   .then(saved => {
@@ -57,9 +47,9 @@ router.post('/register', checkIfUsernameIsUnique, checkPayload, (req, res, next)
 router.post('/login', validateLogin, (req, res, next) => {
   const { username, password } = req.body
 
-  User.findByUsername(username)
+  User.findBy({username})
   .then(([user]) => {
-    if (user && bcrypt.compareSync(password, user.passowrd)) {
+    if (user && bcrypt.compareSync(password, user.password)) {
       const token = buildToken(user)
       res.status(200).json({
         message: `welcome ${username}`,
@@ -94,5 +84,17 @@ router.post('/login', validateLogin, (req, res, next) => {
       the response body should include a string exactly as follows: "invalid credentials".
   */
 });
+
+
+function buildToken(user) {
+  const payload = {
+    subject: user.id,
+    username: user.username
+  }
+  const options = {
+    expiresIn:'2d',
+  }
+  return jwt.sign(payload, JWT_SECRET, options)
+}
 
 module.exports = router;

@@ -1,49 +1,35 @@
 const Users = require('../../Users/users-model')
 
-const checkPayload = (req, res, next) =>  {
-    try {
-        const {username, password } = req.body
-        if(!username || !password) {
-            res.status(404).json({message: 'username and password required'})
-        } else {
-            req.username = username
-            req.password = password
-            next()
-        }
-    } catch (err) {
-        next(err)
-    }
-}
 
-const checkIfUsernameIsUnique = async (req, res, next) => {
+async function checkIfUsernameIsUnique(req, res, next) {
     try {
-        const existingUsername = await Users.findByUsername(req.body.username)
-        if (!existingUsername.length) {
-            next()
+        const users = await Users.findBy({ username: req.body.username })
+        if (!users.length) {
+          next()
         } else {
-            next({ status: 401, message: 'username taken'})
+          next({ status: 422, message: 'username taken' })
         }
-    } catch (err) {
+      } catch (err) {
         next(err)
+      }
     }
-}
 
-const validateLogin = async (req, res, next) => {
-    try {
-        const user = await Users.findByUsername(req.body.username)
-        const password = await Users.validatePassword(req.body.password)
-        if (!user || !password) {
-            next({status:400, message: 'invalid credentials'})
-        } else {
-            next()
-        }
-    } catch (err) {
-        next(err)
+ function validateLogin (req, res, next) {
+    console.log(req.body.username)
+    if (!req.body.username || typeof req.body.username !== 'string') {
+      next({ status: 400, message: 'username and password required' })
+    } else if (!req.body.password || typeof req.body.password !== 'string') {
+      next({ status: 400, message: 'username and password required' })
+    } else {
+      req.user = {
+        username: req.body.username, 
+        password: req.body.password,
+      }
+      next()
     }
-}
+  }
 
 module.exports = {
     checkIfUsernameIsUnique, 
     validateLogin, 
-    checkPayload
 }
