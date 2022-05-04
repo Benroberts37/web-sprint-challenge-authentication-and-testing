@@ -13,7 +13,7 @@ router.post('/register', checkIfUsernameIsUnique, validateLogin, (req, res, next
 
   User.add({ username, password: hash })
   .then(saved => {
-    res.status(201).json(...saved)
+    res.status(201).json({...saved})
   })
   .catch(next)
 
@@ -50,10 +50,9 @@ router.post('/login', validateLogin, (req, res, next) => {
   User.findBy({username})
   .then(([user]) => {
     if (user && bcrypt.compareSync(password, user.password)) {
-      const token = buildToken(user)
       res.status(200).json({
         message: `welcome ${username}`,
-        token
+        token: buildToken(user)
       })
     } else {
       next({status:401, message: 'Invalid credentials'})
@@ -92,7 +91,7 @@ function buildToken(user) {
     username: user.username
   }
   const options = {
-    expiresIn:'2d',
+    expiresIn:'1d',
   }
   return jwt.sign(payload, JWT_SECRET, options)
 }

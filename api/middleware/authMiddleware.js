@@ -15,7 +15,6 @@ async function checkIfUsernameIsUnique(req, res, next) {
     }
 
  function validateLogin (req, res, next) {
-    console.log(req.body.username)
     if (!req.body.username || typeof req.body.username !== 'string') {
       next({ status: 400, message: 'username and password required' })
     } else if (!req.body.password || typeof req.body.password !== 'string') {
